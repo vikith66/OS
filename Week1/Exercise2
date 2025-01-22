@@ -1,0 +1,32 @@
+# i. Redirect the output of the ls command to a file named file_list.txt
+ls > file_list.txt
+
+# ii. Append the output of the date command to the file file_list.txt
+date >> file_list.txt
+
+# iii. Redirect both the output and error messages of the command ls non_existent_file to a file named errors.log
+ls non_existent_file &> errors.log
+
+# iv. Use the << redirection operator to create a file named notes.txt with specified content
+cat << EOF > notes.txt
+This is the first line.
+This is the second line.
+EOF
+
+# v. Use the > operator to overwrite a file named output.txt with the result of the pwd command
+pwd > output.txt
+
+# vi. Display today's date in the format YYYY-MM-DD
+date +"%Y-%m-%d"
+
+# vii. Display the date 7 days ago
+date -d "7 days ago"
+
+# viii. Display the current time only in the format HH:MM:SS
+date +"%H:%M:%S"
+
+# ix. Use ls and wc commands with a pipe to count the number of files in the current directory
+ls | wc -l
+
+# x. List files in the current directory, sort them, and display only the top 5 results using a pipe
+ls | sort | head -n 5
