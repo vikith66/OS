@@ -1,0 +1,257 @@
+#!/bin/bash
+
+# Part 1(a): File Permissions
+# Test the function of -r, -w, -x
+# -r: Check if a file has read permission
+# -w: Check if a file has write permission
+# -x: Check if a file has execute permission
+
+#!/bin/bash
+
+
+read -p "Enter an existing file name: " filename
+
+if [ -r "$filename" ]; then
+
+echo "$filename has read permission"
+
+else
+
+echo "$filename has no read permission"
+
+fi
+
+
+if [ -w "$filename" ]; then
+
+echo "$filename has write permission"
+
+else
+
+echo "$filename has no write permission"
+
+fi
+
+
+if [ -x "$filename" ]; then
+
+echo "$filename has execute permission"
+
+else
+
+echo "$filename has no execute permission"
+
+fi
+
+mca078@mca-telnet:~/OS072/week3$ ./P1_1.sh
+Enter an existing file name: P1_1.sh
+P1_1.sh has read permission
+P1_1.sh has write permission
+P1_1.sh has execute permission
+mca078@mca-telnet:~/OS072/week3$ ls
+P1_1.sh  P1_2.sh  p2  P2_1.sh  P2_2.sh  P2_3.sh  P3_1.sh  P3_2.sh
+mca078@mca-telnet:~/OS072/week3$ ./P1_1.sh
+Enter an existing file name: p2
+p2 has read permission
+p2 has no write permission
+p2 has no execute permission
+
+
+#!/bin/bash
+read -p "Enter a file or folder name: " name
+if [ -e "$name" ]; then
+echo "$name exists! "
+if [ -f "$name" ]; then
+if [ -s "$name" ]; then
+echo "$name is a non empty file"
+else
+echo "$name is an empty file"
+fi
+elif [ -d "$name" ]; then
+echo "$name is a directory"
+fi
+else
+echo "$name does not exist"
+fi
+
+Enter a file or folder name: P1_2.sh
+P1_2.sh exists!
+P1_2.sh is a non empty file
+mca078@mca-telnet:~/OS072/week3$ ./P1_2.sh
+Enter a file or folder name: p3
+p3 does not exist
+mca078@mca-telnet:~/OS072/week3$ mkdir tempfile
+mca078@mca-telnet:~/OS072/week3$ ./P1_2.sh
+Enter a file or folder name: tempfile
+tempfile exists!
+tempfile is a directory
+
+#!/bin/bash
+directory="/home/mca098/os144/w3"
+for file in $(ls "$directory"); do
+if [ -r "$file" ]; then
+echo "$file has read permission"
+else
+echo "$file has no read permission"
+fi
+done
+
+output
+
+mca078@mca-telnet:~/OS072/week3$ ./P2_1.sh
+P1_1.sh has read permission
+P1_2.sh has read permission
+p2 has read permission
+P2_1.sh has read permission
+P2_2.sh has read permission
+P2_3.sh has read permission
+p2ex has read permission
+P3_1.sh has read permission
+P3_2.sh has read permission
+tempfile has read permission
+mca078@mca-telnet:~/OS072/week3$ chmod u-r p2ex
+mca078@mca-telnet:~/OS072/week3$ ./P2_1.sh
+P1_1.sh has read permission
+P1_2.sh has read permission
+p2 has read permission
+P2_1.sh has read permission
+P2_2.sh has read permission
+P2_3.sh has read permission
+p2ex has no read permission
+P3_1.sh has read permission
+P3_2.sh has read permission
+tempfile has read permission
+
+# Part 2(d): Check File Permissions
+echo "Enter a file name to check permissions:"
+read file
+if [ -e "$file" ]; then
+    if [ -r "$file" ]; then
+        echo "$file has read permission."
+    else
+        echo "$file does not have read permission."
+    fi
+    if [ -w "$file" ]; then
+        echo "$file has write permission."
+    else
+        echo "$file does not have write permission."
+    fi
+    if [ -x "$file" ]; then
+        echo "$file has execute permission."
+    else
+        echo "$file does not have execute permission."
+    fi
+else
+    echo "$file does not exist."
+fi
+
+output:
+
+mca078@mca-telnet:~/OS072/week3$ chmod u+x P2_2.sh
+mca078@mca-telnet:~/OS072/week3$ ./P2_2.sh
+Enter a file name to check permissions:
+P2_1.sh
+P2_1.sh has read permission.
+P2_1.sh has write permission.
+P2_1.sh has execute permission.
+mca078@mca-telnet:~/OS072/week3$ touch p2
+mca078@mca-telnet:~/OS072/week3$ ./P2_2.sh
+Enter a file name to check permissions:
+p2
+p2 has read permission.
+p2 has write permission.
+p2 does not have execute permission.
+Enter a file name to check permissions:
+p2ex
+p2ex does not have read permission.
+p2ex has write permission.
+p2ex does not have execute permission.
+
+# Part 2(e): Append Text if Write Permission Exists
+echo "Enter a file name to append text:"
+read file
+if [ -w "$file" ]; then
+    echo "Enter text to append:"
+    read text
+    echo "$text" >> "$file"
+    echo "Text appended to $file."
+else
+    echo "$file does not have write permission."
+fi
+
+output
+
+mca078@mca-telnet:~/OS072/week3$ chmod u+x P2_3.sh
+mca078@mca-telnet:~/OS072/week3$ ./P2_3.sh
+Enter a file name to append text:
+p2
+Enter text to append:
+new texts
+Text appended to p2.
+mca078@mca-telnet:~/OS072/week3$ chmod u-w p2.sh
+chmod: cannot access 'p2.sh': No such file or directory
+mca078@mca-telnet:~/OS072/week3$ chmod u-w p2
+mca078@mca-telnet:~/OS072/week3$ ./P2_3.sh
+Enter a file name to append text:
+p2
+p2 does not have write permission.
+
+#/bin/bash
+hiddenFiles=$(ls -a| grep "^\." |wc -l)
+echo "Hidden files count: $hiddenFiles"
+normalFiles=$(ls -l| grep "^-" | wc -l)
+echo "Normal files count: $normalFiles"
+subDirectories=$(ls -l| grep "^d" | wc -l)
+echo "Sub directories count: $subDirectories"
+
+
+output
+
+mca078@mca-telnet:~/OS072/week3$ chmod u+x P3_1.sh
+mca078@mca-telnet:~/OS072/week3$ ./P3_1.sh
+Hidden files count: 2
+Normal files count: 9
+Sub directories count: 1
+
+#!/bin/bash
+# Part 3(g): Files with Size Greater Than 0
+echo "Files with size greater than 0 in the current directory:"
+directory="."
+for file in $(ls "$directory"); do
+  if [ -r "$file" ]; then
+    if [ -s "$file" ]; then
+        echo "$file"
+    fi
+ fi
+done
+
+
+output
+
+P3_2.sh" 11 lines, 284 bytes written
+mca078@mca-telnet:~/OS072/week3$ ./P3_2.sh
+Files with size greater than 0 in the current directory:
+P1_1.sh
+P1_2.sh
+p2
+P2_1.sh
+P2_2.sh
+P2_3.sh
+P3_1.sh
+P3_2.sh
+tempfile
+mca078@mca-telnet:~/OS072/week3$ ls
+P1_1.sh  P1_2.sh  p2  P2_1.sh  P2_2.sh  P2_3.sh  p2ex  P3_1.sh  P3_2.sh  tempfile
+
+mca078@mca-telnet:~/OS072/week3$ ls -l
+total 36
+-rwxrw-r-- 1 mca078 mca078  408 Jan 23 10:21 P1_1.sh
+-rwxrw-r-- 1 mca078 mca078  316 Jan 23 10:37 P1_2.sh
+-r--rw-r-- 1 mca078 mca078   10 Jan 22 15:57 p2
+-rwxrw-r-- 1 mca078 mca078  191 Jan 23 10:48 P2_1.sh
+-rwxrw-r-- 1 mca078 mca078  592 Jan 22 15:52 P2_2.sh
+-rwxrw-r-- 1 mca078 mca078  306 Jan 22 15:56 P2_3.sh
+--w-rw-r-- 1 mca078 mca078    0 Jan 23 10:35 p2ex
+-rwxrw-r-- 1 mca078 mca078  260 Jan 23 11:05 P3_1.sh
+-rwxrw-r-- 1 mca078 mca078  284 Jan 23 11:23 P3_2.sh
+drwxrwxr-x 2 mca078 mca078 4096 Jan 23 10:39 tempfile
