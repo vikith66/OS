@@ -1,0 +1,34 @@
+#!/bin/bash
+for file in hello* ;do
+        echo "$file"
+done
+
+
+
+-----
+
+
+#!/bin/bash
+read -p "Enter the file name: " f
+read -p "Enter the pattern: " pattern
+if [ -e "$f" ]; then
+        if grep -q "$pattern" "$f"; then
+                echo "Pattern $pattern found in $f"
+        else
+                echo "Pattern $pattern is not found in $f"
+        fi
+else
+        echo "$f does not exists"
+fi
+
+
+
+-------
+
+#!/bin/bash
+read -p "Enter the filename: " f
+if [ -e "$f" ]; then
+        ls -l "$f" | cut -d ' ' -f1
+else
+        echo "$f does not exists"
+fi
