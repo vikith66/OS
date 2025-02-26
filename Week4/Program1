@@ -1,0 +1,19 @@
+#!/bin/bash
+read -p "Enter a filename: " f
+echo "Cut Command: Extracting 1, 3 and 5th character"
+cut -c 1,3,5 $f
+
+echo "Sort Command: Sorting in ascending order"
+sort $f
+
+echo "tr Command: Upper case to Lower case"
+cat $f | tr [A-Z] [a-z]
+
+echo "Grep Command: Words Containing BER"
+grep BER $f
+
+echo "Head Command: First 2 lines"
+head -n 2 $f
+
+echo "Tail Command: Last 2 lines"
+tail -n 2 $f
