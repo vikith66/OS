@@ -1,0 +1,78 @@
+#include <iostream>
+using namespace std;
+
+struct Process {
+    int id, arrival, burst, waiting, turnaround, endTime;
+};
+
+void sortid(Process p[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (p[j].arrival > p[j + 1].arrival) {
+                swap(p[j], p[j + 1]);
+            }
+        }
+    }
+}
+
+void calculate(Process p[], int n) {
+    p[0].waiting = 0;
+    p[0].endTime = p[0].arrival + p[0].burst;
+    p[0].turnaround = p[0].burst;
+
+    float totalWT = p[0].waiting, totalTAT = p[0].turnaround;
+
+    for (int i = 1; i < n; i++) {
+        if (p[i - 1].endTime > p[i].arrival) {
+            p[i].waiting = p[i - 1].endTime - p[i].arrival;
+        } else {
+            p[i].waiting = 0;
+        }
+
+        p[i].endTime = p[i].arrival + p[i].waiting + p[i].burst;
+        p[i].turnaround = p[i].waiting + p[i].burst;
+
+        totalWT += p[i].waiting;
+        totalTAT += p[i].turnaround;
+    }
+
+    cout << "ID  Arrival  Burst  End Time  Waiting Time  Turnaround Time \n";
+    for (int i = 0; i < n; i++) {
+        cout << p[i].id << "    " << p[i].arrival << "       " << p[i].burst << "       "
+<< p[i].endTime << "          " << p[i].waiting << "            " << p[i].turnaround << "           " << "\n";
+    }
+
+    cout << "\nAverage Waiting Time: " << totalWT / n;
+    cout << "\nAverage Turnaround Time: " << totalTAT / n << "\n";
+}
+
+void displayGanttChart(Process p[], int n) {
+    cout << "\nGantt Chart \n";
+    cout << "| ";
+    for (int i = 0; i < n; i++) {
+        if (i > 0 && p[i].arrival > p[i - 1].endTime) {
+            cout << "IDLE | "; // Display idle time
+        }
+        cout << "P" << p[i].id << " | ";
+    }
+    cout << "\n";
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of processes: ";
+    cin >> n;
+
+    Process p[n];
+    cout << "Enter Process ID, Arrival Time, and Burst Time for each process:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Process " << i + 1 << ": ";
+        cin >> p[i].id >> p[i].arrival >> p[i].burst;
+    }
+
+    sortid(p, n);
+    calculate(p, n);
+    displayGanttChart(p, n);
+
+    return 0;
+}
