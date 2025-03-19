@@ -1,0 +1,78 @@
+#include <iostream>
+using namespace std;
+
+struct Process {
+    int id, arrival, burst, waiting, turnaround, endTime;
+};
+
+void sortByArrival(Process p[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (p[j].arrival < p[i].arrival) {
+                swap(p[i], p[j]);
+            }
+        }
+    }
+}
+
+void calculateTimes(Process p[], int n) {
+    int currentTime = 0;
+    float totalWT = 0, totalTAT = 0;
+
+    sortByArrival(p, n);
+
+    for (int i = 0; i < n; i++) {
+        int shortest = i;
+        for (int j = i + 1; j < n; j++) {
+            if (p[j].arrival <= currentTime && p[j].burst < p[shortest].burst) {
+                shortest = j;
+            }
+        }
+
+        swap(p[i], p[shortest]);
+
+        if (p[i].arrival > currentTime) {
+            currentTime = p[i].arrival;
+        }
+        p[i].waiting = currentTime - p[i].arrival;
+        p[i].endTime = currentTime + p[i].burst;
+        p[i].turnaround = p[i].endTime - p[i].arrival;
+        currentTime = p[i].endTime;
+        totalWT += p[i].waiting;
+        totalTAT += p[i].turnaround;
+    }
+
+    cout << "ID  Arrival  Burst  End Time  Waiting Time  Turnaround Time\n";
+    for (int i = 0; i < n; i++) {
+        cout <<"P" <<p[i].id << "    " << p[i].arrival << "       " << p[i].burst << "       "
+             << p[i].endTime << "          " << p[i].waiting << "             " << p[i].turnaround << "\n";
+    }
+
+    cout << "\nAverage Waiting Time: " << totalWT / n << "\n";
+    cout << "Average Turnaround Time: " << totalTAT / n << "\n";
+}
+
+void displayGanttChart(Process p[], int n) {
+    cout << "\nGantt Chart:\n| ";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << p[i].id << " | ";
+    }
+    cout << "\n";
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of processes: ";
+    cin >> n;
+    Process p[n];
+    cout << "Enter Process ID, Arrival Time, and Burst Time for each process:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Process " << i + 1 << ": ";
+        cin >> p[i].id >> p[i].arrival >> p[i].burst;
+    }
+
+    calculateTimes(p, n);
+    displayGanttChart(p, n);
+
+    return 0;
+}
