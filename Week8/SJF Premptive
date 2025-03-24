@@ -1,0 +1,76 @@
+#include <iostream>
+using namespace std;
+
+struct SJF {
+    int pid, at, bt, remaining_bt, wt, tat, ct, start_time;
+};
+
+void sjf(int n, SJF s[]) {
+    int completed = 0, time = 0;
+    float total_wt = 0, total_tat = 0;
+
+    for (int i = 0; i < n; i++) {
+        s[i].remaining_bt = s[i].bt;
+        s[i].start_time = -1;
+    }
+
+    while (completed < n) {
+        int min_bt = 10000;
+        int min_index = -1;
+
+        for (int i = 0; i < n; i++) {
+            if (s[i].at <= time && s[i].remaining_bt > 0 && s[i].remaining_bt < min_bt) {
+                min_bt = s[i].remaining_bt;
+                min_index = i;
+            }
+        }
+
+        if (min_index == -1) {
+            time++;
+            continue;
+        }
+
+        if (s[min_index].start_time == -1) {
+            s[min_index].start_time = time;
+        }
+
+        s[min_index].remaining_bt--;
+
+        if (s[min_index].remaining_bt == 0) {
+            completed++;
+            s[min_index].ct = time + 1;
+            s[min_index].tat = s[min_index].ct - s[min_index].at;
+            s[min_index].wt = s[min_index].tat - s[min_index].bt;
+
+            total_wt += s[min_index].wt;
+            total_tat += s[min_index].tat;
+        }
+
+        time++;
+    }
+
+    cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tCompletion Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << s[i].pid << "\t" << s[i].at << "\t\t" << s[i].bt << "\t\t" << s[i].wt << "\t\t"
+        << s[i].tat << "\t\t" << s[i].ct << "\n";
+    }
+
+    cout << "\nAverage Waiting Time: " << total_wt / n << "\n";
+    cout << "Average Turnaround Time: " << total_tat / n << "\n";
+}
+
+int main() {
+    int n;
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    SJF s[n];
+
+    for (int i = 0; i < n; i++) {
+        cout << "Enter process id, arrival time and burst time: ";
+        cin >> s[i].pid >> s[i].at >> s[i].bt;
+    }
+
+    sjf(n, s);
+    return 0;
+}
