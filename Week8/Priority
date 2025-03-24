@@ -1,0 +1,68 @@
+#include <iostream>
+using namespace std;
+
+struct Process {
+    int pid, at, bt, priority, remaining_bt, wt, tat, ct;
+};
+
+void preemptive_priority(int n, Process p[]) {
+    int completed = 0, time = 0;
+    float total_wt = 0, total_tat = 0;
+    
+    for (int i = 0; i < n; i++) {
+        p[i].remaining_bt = p[i].bt;
+    }
+
+    while (completed < n) {
+        int highest_priority = 10000;
+        int selected_index = -1;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].at <= time && p[i].remaining_bt > 0 && p[i].priority < highest_priority) {
+                highest_priority = p[i].priority;
+                selected_index = i;
+            }
+        }
+
+        if (selected_index == -1) {
+            time++;
+            continue;
+        }
+
+        p[selected_index].remaining_bt--;
+
+        if (p[selected_index].remaining_bt == 0) {
+            completed++;
+            p[selected_index].ct = time + 1;
+            p[selected_index].tat = p[selected_index].ct - p[selected_index].at;
+            p[selected_index].wt = p[selected_index].tat - p[selected_index].bt;
+            total_wt += p[selected_index].wt;
+            total_tat += p[selected_index].tat;
+        }
+        time++;
+    }
+
+    cout << "\nProcess\tArrival Time\tBurst Time\tPriority\tCompletion Time\tTurnaround Time\tWaiting Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << p[i].pid << "\t" << p[i].at << "\t\t" << p[i].bt << "\t\t" << p[i].priority << "\t\t" << p[i].ct << "\t\t" << p[i].tat << "\t\t" << p[i].wt << "\n";
+    }
+
+    cout << "\nAverage Turnaround Time: " << total_tat / n << "\n";
+    cout << "Average Waiting Time: " << total_wt / n << "\n";
+}
+
+int main() {
+    int n;
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    Process p[n];
+
+    for (int i = 0; i < n; i++) {
+        cout << "Enter process id, arrival time, burst time, and priority: ";
+        cin >> p[i].pid >> p[i].at >> p[i].bt >> p[i].priority;
+    }
+
+    preemptive_priority(n, p);
+    return 0;
+}
