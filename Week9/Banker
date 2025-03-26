@@ -1,0 +1,117 @@
+#include <iostream>
+
+#define MAX_PRO 10
+#define MAX_RES 10
+
+using namespace std;
+
+int available[MAX_RES], max_resources[MAX_PRO][MAX_RES];
+int allocation[MAX_PRO][MAX_RES], need[MAX_PRO][MAX_RES];
+int num_processes, num_resources;
+
+bool is_safe() {
+    int work[MAX_RES], finish[MAX_PRO] = {0};
+    int safe_sequence[MAX_PRO], count = 0;
+    
+    for (int i = 0; i < num_resources; i++)
+        work[i] = available[i];
+    
+    while (count < num_processes) {
+        bool found = false;
+        for (int i = 0; i < num_processes; i++) {
+            if (!finish[i]) {
+                bool can_allocate = true;
+                for (int j = 0; j < num_resources; j++) {
+                    if (need[i][j] > work[j]) {
+                        can_allocate = false;
+                        break;
+                    }
+                }
+                if (can_allocate) {
+                    for (int j = 0; j < num_resources; j++)
+                        work[j] += allocation[i][j];
+                    
+                    safe_sequence[count++] = i;
+                    finish[i] = 1;
+                    found = true;
+                }
+            }
+        }
+        if (!found) return false;
+    }
+    cout << "Safe sequence: ";
+    for (int i = 0; i < num_processes; i++)
+        cout << "P" << safe_sequence[i] << " ";
+    cout << endl;
+    
+    return true;
+}
+
+void request_resources(int process_id, int request[]) {
+    for (int i = 0; i < num_resources; i++) {
+        if (request[i] > need[process_id][i]) {
+            cout << "Error: Process P" << process_id << " requested more than its need.\n";
+            return;
+        }
+        if (request[i] > available[i]) {
+            cout << "Process P" << process_id << " must wait. Not enough available resources.\n";
+            return;
+        }
+    }
+    for (int i = 0; i < num_resources; i++) {
+        available[i] -= request[i];
+        allocation[process_id][i] += request[i];
+        need[process_id][i] -= request[i];
+    }
+    if (is_safe()) {
+        cout << "Request granted.\n";
+    } else {
+        for (int i = 0; i < num_resources; i++) {
+            available[i] += request[i];
+            allocation[process_id][i] -= request[i];
+            need[process_id][i] += request[i];
+        }
+        cout << "Request denied. System would be in an unsafe state.\n";
+    }
+}
+
+int main() {
+    cout << "Enter number of processes and resources: ";
+    cin >> num_processes >> num_resources;
+
+    cout << "Enter available resources: ";
+    for (int i = 0; i < num_resources; i++)
+        cin >> available[i];
+
+    cout << "Enter maximum demand matrix:\n";
+    for (int i = 0; i < num_processes; i++)
+        for (int j = 0; j < num_resources; j++)
+            cin >> max_resources[i][j];
+
+    cout << "Enter allocation matrix:\n";
+    for (int i = 0; i < num_processes; i++)
+        for (int j = 0; j < num_resources; j++) {
+            cin >> allocation[i][j];
+            need[i][j] = max_resources[i][j] - allocation[i][j];
+        }
+
+    if (is_safe()) {
+        cout << "System is in a safe state.\n";
+    } else {
+        cout << "System is in an unsafe state.\n";
+        return 1;
+    }
+
+    int process_id, request[MAX_RES];
+    cout << "Enter process number to request resources: ";
+    cin >> process_id;
+
+    cout << "Enter resource request: ";
+    for (int i = 0; i < num_resources; i++)
+        cin >> request[i];
+
+    request_resources(process_id, request);
+    
+    return 0;
+}
+    
