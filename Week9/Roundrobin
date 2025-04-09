@@ -1,0 +1,82 @@
+#include <iostream>
+using namespace std;
+
+struct Process {
+    int pid;
+    int at;   // Arrival Time
+    int bt;   // Burst Time
+    int rt;   // Remaining Time
+    int ct;   // Completion Time
+    int tat;  // Turnaround Time
+    int wt;   // Waiting Time
+};
+
+// Bubble sort by arrival time
+void sortByArrival(Process p[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (p[j].at > p[j + 1].at) {
+                Process temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int n, tq;
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    Process p[100];
+
+    for (int i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        cout << "Enter arrival time for process " << p[i].pid << ": ";
+        cin >> p[i].at;
+        cout << "Enter burst time for process " << p[i].pid << ": ";
+        cin >> p[i].bt;
+        p[i].rt = p[i].bt;
+    }
+
+    cout << "Enter time quantum: ";
+    cin >> tq;
+
+    sortByArrival(p, n);
+
+    int time = 0, done = 0;
+
+    while (done < n) {
+        bool executed = false;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].rt > 0 && p[i].at <= time) {
+                executed = true;
+
+                if (p[i].rt > tq) {
+                    time += tq;
+                    p[i].rt -= tq;
+                } else {
+                    time += p[i].rt;
+                    p[i].ct = time;
+                    p[i].tat = p[i].ct - p[i].at;
+                    p[i].wt = p[i].tat - p[i].bt;
+                    p[i].rt = 0;
+                    done++;
+                }
+            }
+        }
+
+        if (!executed)
+            time++;
+    }
+
+    cout << "\nPID\tAT\tBT\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; i++) {
+        cout << p[i].pid << "\t" << p[i].at << "\t" << p[i].bt << "\t"
+             << p[i].ct << "\t" << p[i].tat << "\t" << p[i].wt << "\n";
+    }
+
+    return 0;
+}
